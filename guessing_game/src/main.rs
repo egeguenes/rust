@@ -7,7 +7,7 @@ use std::time;
 fn main() {
     println!("Guessing Game!");
 
-    let answer = rand::thread_rng().gen_range(1, 101);
+    let answer = rand::thread_rng().gen_range(1, 1000001);
     println!("SECRET: The answer is {}", answer);
 
     println!("Please select the game mode: 0 default / 1 bot");
@@ -30,15 +30,25 @@ fn main() {
 }
 
 fn game_computer(answer: u32) {
+    let mut max_val = 1000001;
+    let mut min_val = 1;
+    let mut current_guess = rand::thread_rng().gen_range(min_val, max_val);
     loop {
         let ten_millis = time::Duration::from_millis(100);
         std::thread::sleep(ten_millis);
-        let guess = rand::thread_rng().gen_range(1, 101);
-        println!("Guess is {}", guess);
+        println!("Guess is {}", current_guess);
 
-        match guess.cmp(&answer) {
-            Ordering::Less => println!("{} than that!", "Bigger".to_uppercase().red()),
-            Ordering::Greater => println!("{} than that!", "Lesser".red()),
+        match current_guess.cmp(&answer) {
+            Ordering::Less => {
+                println!("{} than that!", "Bigger".to_uppercase().red());
+                min_val = current_guess + 1;
+                current_guess = rand::thread_rng().gen_range(min_val, max_val);
+            }
+            Ordering::Greater => {
+                println!("{} than that!", "Lesser".red());
+                max_val = current_guess - 1;
+                current_guess = rand::thread_rng().gen_range(min_val, max_val);
+            }
             Ordering::Equal => {
                 println!("{}", "Exactly the right answer! You win!!!".green());
                 break;
