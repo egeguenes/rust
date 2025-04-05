@@ -24,7 +24,7 @@ enum UniMember {
     Professor,
 }
 
-fn print_drink(drink: Drink) {
+fn print_drink(drink: &Drink) {
     match drink.flavor {
         Flavor::Sparkling => println!("Flavor: Sparkling"),
         Flavor::Sweet => println!("Flavor: Sweet"),
@@ -63,6 +63,19 @@ fn display_quantity(item: &GroceryItem) {
     println!("The quantity of the item is {:?}", item.quantity);
 }
 
+impl Drink {
+    fn sweeten(self) -> Self {
+        Self {
+            flavor: Flavor::Sweet,
+            fluid_oz: self.fluid_oz,
+        }
+    }
+
+    fn display_drink_impl(&self) {
+        print_drink(&self);
+    }
+}
+
 fn main() {
     let my_potato = Potato {
         variety: String::from("Sweet Potato"),
@@ -77,7 +90,10 @@ fn main() {
         fluid_oz: 12.24,
     };
 
-    print_drink(energy);
+    print_drink(&energy);
+    energy.display_drink_impl();
+    let energy = Drink::sweeten(energy);
+    energy.display_drink_impl();
 
     let coord = (2, 3);
     let (x, y) = (2, 3);
