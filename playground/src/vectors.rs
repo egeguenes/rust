@@ -13,7 +13,7 @@ fn main() {
     println!("{:?}", numbers[0]);
     println!("{:?}", colors[0]);
 
-    for number in numbers {
+    for number in &numbers {
         println!("{:?}", number);
     }
 
