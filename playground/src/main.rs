@@ -126,3 +126,8 @@ fn main() {
     display_id(&apples);
     display_quantity(&apples);
 }
+
+fn myfunc(num: &mut i32) -> i32 {
+    *num = *num + 1;
+    num
+}

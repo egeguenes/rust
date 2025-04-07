@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["game_computer","game_person","main"]};

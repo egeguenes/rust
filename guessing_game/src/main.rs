@@ -13,14 +13,14 @@ fn main() {
     println!("Please select the game mode: 0 default / 1 bot");
     let mut mode = String::new();
     io::stdin().read_line(&mut mode).expect("Failed to read");
-    let mode: u32 = match mode.trim().parse() {
+    let game_mode: u32 = match mode.trim().parse() {
         Ok(num) => num,
         Err(_) => return,
     };
 
-    if mode == 0 {
+    if game_mode == 0 {
         game_person(answer);
-    } else if mode == 1 {
+    } else if game_mode == 1 {
         game_computer(answer);
     } else {
         return;
