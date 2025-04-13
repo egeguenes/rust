@@ -1,6 +1,13 @@
 use std::env;
 use std::io;
 
+struct User {
+    active: bool,
+    username: String,
+    email: String,
+    sign_in_count: u64,
+}
+
 const THREE_HOURS_IN_SECONDS: u32 = 60 * 60 * 3;
 
 fn main() {
@@ -64,8 +71,83 @@ fn main() {
 
         count += 1;
     }
+
     println!("End count = {count}");
     println!("5th fibonacci number is {}", fibo(5));
+
+    let num = 14;
+    is_copy(num);
+    println!("{num}");
+
+    let mut abc = String::from("abc");
+    let a = &mut abc;
+    let b = &mut abc;
+
+    let str = String::from("Hello");
+    let len = str.len();
+    let str = &str[0..len];
+    let str = &str[..];
+
+    check_first_word();
+
+    let username = String::from("username");
+    let email = String::from("username@user.com");
+    let user1 = build_user(username, email);
+}
+
+fn build_user(username: String, email: String) -> User {
+    /*
+    User {
+        active: true,
+        username: username,
+        email: email,
+        sign_in_count: 1,
+    }
+    */
+
+    // easier short hand verison
+    User {
+        active: true,
+        username,
+        email,
+        sign_in_count: 1,
+    }
+}
+
+fn check_first_word() -> () {
+    let str = String::from("Potato machine bool checker");
+    assert_eq!("Potato", first_word(&str));
+    assert_eq!("Potato", first_word(&str[..]));
+    assert_eq!("Potato", first_word(&str[0..12]));
+    println!("First word check!");
+}
+
+fn first_word(s: &str) -> &str {
+    let bytes = s.as_bytes();
+
+    for (i, &item) in bytes.iter().enumerate() {
+        if item == b' ' {
+            return &s[0..i];
+        }
+    }
+
+    return &s[..];
+}
+
+fn first_word_index(s: &str) -> usize {
+    let bytes = s.as_bytes();
+
+    for (i, &item) in bytes.iter().enumerate() {
+        if item == b' ' {
+            return i;
+        }
+    }
+
+    s.len()
+}
+
+fn is_copy(num: i32) {
+    println!("{num}");
 }
 
 // fib numbers are always positive, so using unsigned integer
