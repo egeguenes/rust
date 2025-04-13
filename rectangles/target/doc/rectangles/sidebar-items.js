@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["area_lit","area_struct","area_tuple","main"],"struct":["Rectangle"]};
