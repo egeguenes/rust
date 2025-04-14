@@ -40,6 +40,26 @@ fn main() {
     // A much better printing for it as we can see what happens and what we have input
     dbg!(&rect_struct);
     dbg!(area_lit(12, 12));
+
+    /*
+    let mut new_rect: Rectangle = Rectangle {
+        width: 2,
+        height: 2,
+    };
+    new_rect.print_area();
+    new_rect.make_bigger();
+    new_rect.print_area();
+    */
+    let litte_rect = Rectangle {
+        width: 25,
+        height: 40,
+    };
+    println!(
+        "bigger can hold the little one : {}",
+        rect_struct.can_hold(&litte_rect)
+    );
+
+    let square = Rectangle::square(25);
 }
 
 fn area_lit(width: u32, height: u32) -> u32 {
@@ -64,5 +84,21 @@ impl Rectangle {
 
     fn area(&self) -> u32 {
         self.width * self.height
+    }
+
+    fn make_bigger(&mut self) {
+        self.width *= 2;
+        self.height *= 2;
+    }
+
+    fn can_hold(&self, rect_other: &Rectangle) -> bool {
+        self.width >= rect_other.width && self.height >= rect_other.height
+    }
+
+    fn square(size: u32) -> Self {
+        Self {
+            width: size,
+            height: size,
+        }
     }
 }
