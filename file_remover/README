@@ -1,0 +1,10 @@
+A Tool for deleting the files
+Rather than just deleting the file, this tool overwrite the whole file with 0s and then deletes it.
+With that there is another layer of security provided!
+
+Usage:
+cargo run <file_name_extension> // cargo run foo.txt
+./target/release/rustrm <file_name_extension>
+
+Or rather copy the binary to usr/local/bin file to run it from terminal and binary name "rustrm" without leading . by using the following command
+sudo cp /target/release/rustrm <paste_the_path_to_/usr/local/bin>

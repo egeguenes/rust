@@ -1,0 +1,17 @@
+[package]
+name = "file_remover"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+path = "src/main.rs"
+name = "rustrm"
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = 'abort'
+strip = true
+
+[dependencies]
