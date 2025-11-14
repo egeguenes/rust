@@ -1,0 +1,98 @@
+use tokio::{
+    net::{TcpStream, TcpListener},
+    sync::broadcast,
+    io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
+};
+use serde::{Serialize, Deserialize};
+use chrono::Local;
+use std::error::Error;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct ChatMessage {
+    username: String,
+    content: String,
+    timestamp: String,
+    message_type: MessageType,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+enum MessageType {
+    UserMessage,
+    SystemNotification,
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
+    // tcp listener
+    let listener = TcpListener::bind("127.0.0.1:8082").await?;
+
+    // broadcast channel for message distr
+    let (tx, _) = broadcast::channel::<String>(100);
+
+    loop {
+        let (socket, addr) = listener.accept().await?;
+
+        println!("{} New connection", Local::now().format("%H:%M:%S"));
+        println!("Address: {}", addr);
+
+        let tx = tx.clone();
+        let rx = tx.subscribe();
+
+        tokio::spawn(async move {
+            handle_connection(socket, tx, rx).await
+        });
+    }
+}
+
+async fn handle_connection(mut socket: TcpStream, tx: broadcast::Sender<String>, mut rx: broadcast::Receiver<String>) {
+    let (reader, mut writer) = socket.split();
+    let mut reader = BufReader::new(reader);
+    let mut username = String::new();
+    reader.read_line(&mut username).await.unwrap();
+    let username = username.trim().to_string();
+
+    let join_msg = ChatMessage {
+        username: username.clone(),
+        content: "joined the chat".to_string(),
+        timestamp: Local::now().format("%H:%M:%S").to_string(),
+        message_type: MessageType::SystemNotification,
+    };
+    let join_json = serde_json::to_string(&join_msg).unwrap();
+    tx.send(join_json).unwrap();
+
+    let mut line = String::new();
+    loop {
+        tokio::select!{
+            result = reader.read_line(&mut line) => {
+                if result.unwrap() == 0 {
+                    break;
+                }
+                let msg = ChatMessage {
+                    username: username.clone(),
+                    content: line.trim().to_string(),
+                    timestamp: Local::now().format("%H:%M:%S").to_string(),
+                    message_type: MessageType::UserMessage,
+                };
+                let json = serde_json::to_string(&msg).unwrap();
+                tx.send(json).unwrap();
+                line.clear();
+            }
+            result = rx.recv() => {
+                let msg = result.unwrap();
+                writer.write_all(msg.as_bytes()).await.unwrap();
+                writer.write_all(b"\n").await.unwrap();
+            }
+        }
+    }
+
+    let leave_msg = ChatMessage {
+        username: username.clone(),
+        content: "left the chat".to_string(),
+        timestamp: Local::now().format("%H:%M:%S").to_string(),
+        message_type: MessageType::SystemNotification,
+    };
+    let leave_json = serde_json::to_string(&leave_msg).unwrap();
+    tx.send(leave_json).unwrap();
+
+    println!("{}: {} disconnected", Local::now().format("%H:%M:%S"), username);
+}

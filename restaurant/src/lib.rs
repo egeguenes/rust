@@ -46,6 +46,12 @@ mod back_of_house {
 
 use crate::front_of_house::hosting;
 
+mod customer {
+    pub fn eat_at_restaurant() {
+        super::hosting::add_to_waitlist();
+    }
+}
+
 pub fn eat_at_restaurant() {
     // absolute path
     crate::front_of_house::hosting::add_to_waitlist();
